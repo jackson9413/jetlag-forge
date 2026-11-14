@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jetlag-forge - circadian travel planner</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">&#9789;</span>
+    <div>
+      <h1>jetlag-forge</h1>
+      <p class="tagline">Circadian jet-lag and body-clock planner</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span class="pill pill-muted" id="privacy-pill">Local-first &middot; no API keys &middot; nothing leaves this machine</span>
+    <button class="btn btn-ghost" id="btn-history">History</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel input-panel">
+    <div class="panel-head">
+      <h2>Trip brief</h2>
+      <span class="hint" id="sample-hint">Pick a sample or write your own</span>
+    </div>
+
+    <div class="sample-row" id="sample-row"></div>
+
+    <label class="field">
+      <span class="field-label">Brief</span>
+      <textarea id="brief" spellcheck="false" placeholder="Trip: Tokyo sprint&#10;Home: Chicago&#10;Home wake: 06:30&#10;Home sleep: 22:30&#10;Chronotype: late&#10;Melatonin: 0.5mg&#10;&#10;Flight: ORD -&gt; HND | depart 2026-11-16 11:00 | arrive 2026-11-17 14:30&#10;Stay: Tokyo | from 2026-11-17 | to 2026-11-22&#10;Event: Client review | 2026-11-18 10:00 | Tokyo"></textarea>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Profile</span>
+      <select id="profile"></select>
+      <span class="field-help" id="profile-blurb"></span>
+    </label>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-analyze">Analyse trip</button>
+      <button class="btn btn-ghost" id="btn-export-md">Export Markdown</button>
+      <button class="btn btn-ghost" id="btn-export-json">Export JSON</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btn-save">Save to history</button>
+      <button class="btn btn-ghost" id="btn-clear">Clear</button>
+    </div>
+    <p class="error" id="error-box" hidden></p>
+
+    <details class="format-help">
+      <summary>Brief format</summary>
+      <pre>Trip: title
+Home: Chicago
+Home wake: 06:30
+Home sleep: 22:30
+Chronotype: early | intermediate | late
+Melatonin: 0.5mg
+Purpose: business
+
+Flight: ORD -&gt; HND | depart 2026-11-16 11:00 | arrive 2026-11-17 14:30
+Stay: Tokyo | from 2026-11-17 | to 2026-11-22
+Event: Client review | 2026-11-18 10:00 | Tokyo</pre>
+      <p>Flight times are local to each airport. Places accept airport codes, city names or IANA zones (<code>Asia/Tokyo</code>). The clock shift is folded into (-12, +12], so crossing the date line flips the direction of the advice.</p>
+    </details>
+  </section>
+
+  <section class="panel results-panel" id="results">
+    <div class="empty-state" id="empty-state">
+      <h2>No trip analysed yet</h2>
+      <p>Load a sample or paste a brief, then hit <strong>Analyse trip</strong>. You will get a body-clock plan per day, a five-axis scorecard, ranked findings with fixes, and a prioritised action list.</p>
+      <ul class="feature-list">
+        <li><strong>Real circadian math.</strong> Two-process sleep model with melatonin gating, a sleep-maintenance-zone awakening, and hour-by-hour adaptation.</li>
+        <li><strong>Direction aware.</strong> Eastward and westward shifts get opposite light, meal and caffeine advice, because they need opposite corrections.</li>
+        <li><strong>Event aware.</strong> Meetings are scored against your body clock, so a 10:00 local meeting that lands at 03:00 on your internal clock gets flagged.</li>
+        <li><strong>Offline.</strong> Standard library only. No API keys, no network calls, no LLM.</li>
+      </ul>
+    </div>
+    <div id="report" hidden></div>
+  </section>
+</main>
+
+<div class="drawer" id="history-drawer" hidden>
+  <div class="drawer-head">
+    <h2>Saved trips</h2>
+    <button class="btn btn-ghost" id="btn-close-history">Close</button>
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
